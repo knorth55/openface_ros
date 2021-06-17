@@ -17,18 +17,23 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(OpenCV 3 REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(dlib REQUIRED)
+
+set(ENV{PKG_CONFIG_PATH} ${CATKIN_DEVEL_PREFIX}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH})
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(openface libopenface REQUIRED)
+
 find_library(OPENFACE_FA_LIB FaceAnalyser PATH_SUFFIXES openface)
 find_library(OPENFACE_LD_LIB LandmarkDetector PATH_SUFFIXES openface)
 set(OPENFACE_LIBS ${OPENFACE_FA_LIB} ${OPENFACE_LD_LIB})
 
-find_file(OPENLIB_FA_INCLUDE FaceAnalyser.h PATH_SUFFIXES openface)
-get_filename_component(OPENLIB_PATH ${OPENLIB_FA_INCLUDE} DIRECTORY)
-message(${OPENLIB_PATH})
-get_filename_component(OPENLIB_INCLUDE_DIR ${OPENLIB_PATH} DIRECTORY)
-message(${OPENLIB_INCLUDE_DIR})
-message(${CMAKE_C_COMPILER})
+find_file(OPENFACE_FA_INCLUDE FaceAnalyser.h PATH_SUFFIXES openface)
+get_filename_component(OPENFACE_PATH ${OPENFACE_FA_INCLUDE} DIRECTORY)
+get_filename_component(OPENFACE_INCLUDE_DIR ${OPENFACE_PATH} DIRECTORY)
 
-find_package(dlib REQUIRED)
+message("OPENFACE_LIBS       : ${OPENFACE_LIBS}")
+message("OPENFACE_PATH       : ${OPENFACE_PATH}")
+message("OPENFACE_INCLUDE_DIR: ${OPENFACE_INCLUDE_DIR}")
 
 add_message_files(FILES ActionUnit.msg Face.msg Faces.msg)
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
@@ -39,7 +44,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${OPENLIB_INCLUDE_DIR}
+  ${OPENFACE_INCLUDE_DIR}
   ${DLIB_INCLUDE_DIR}
   ${Boost_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
